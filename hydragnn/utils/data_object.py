@@ -7,6 +7,10 @@ class Data_object:
         self.edge_attr = None
         self.iterator = 0
 
+    def set_graphs(self, edge_index, edge_attr):
+        self.edge_index = edge_index
+        self.edge_attr = edge_attr
+
     def __iter__(self):
         return self
 
