@@ -1,4 +1,4 @@
-*~
+hydragnn/utils/tensors
 *DS_Store
 __pycache__
 *.egg-info
@@ -6,3 +6,4 @@ dist/
 dataset/
 logs/
 serialized_dataset/
+/hydragnn/utils/tensors/
