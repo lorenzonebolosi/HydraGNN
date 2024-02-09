@@ -20,9 +20,8 @@ def parallel_processing(data):
 
     #I need to discard all the excess values that have been transformed in -1
     for value in data:
-        if '-1' not in value:
-            tensore = torch.load('/Users/lorenzonebolosi/Desktop/HydraGNN/hydragnn/utils/tensors/' + value)
-            tensordictionary.append(tensore)
+        tensore = torch.load('/Users/lorenzonebolosi/Desktop/HydraGNN/hydragnn/utils/tensors/' + value)
+        tensordictionary.append(tensore)
 
     #Create the edge only once
     first_data = Data_object(tensordictionary[0][0])
