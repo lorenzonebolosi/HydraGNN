@@ -7,3 +7,15 @@ dataset/
 logs/
 serialized_dataset/
 /hydragnn/utils/tensors/
+debug_file.py
+hydragnn/utils/tensors/random_v_0.pt
+hydragnn/utils/tensors/random_v_1.pt
+hydragnn/utils/tensors/random_v_2.pt
+hydragnn/utils/tensors/random_v_3.pt
+hydragnn/utils/tensors/random_v_4.pt
+hydragnn/utils/tensors/random_v_5.pt
+hydragnn/utils/tensors/random_v_6.pt
+hydragnn/utils/tensors/random_v_7.pt
+hydragnn/utils/tensors/random_v_8.pt
+hydragnn/utils/tensors/random_v_9.pt
+test.py
