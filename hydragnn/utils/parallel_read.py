@@ -2,8 +2,7 @@ import torch
 from mpi4py import MPI
 import numpy as np
 from torch_geometric.transforms import RadiusGraph, Distance
-from hydragnn.utils.data_object import Data_object
-
+from torch_geometric.data import Data
 
 #Used for splitting the inputs between all the processes
 def split( a, n):
@@ -24,15 +23,24 @@ def parallel_processing(data):
         tensordictionary.append(tensore)
 
     #Create the edge only once
-    first_data = Data_object(tensordictionary[0][0])
+    first_data = Data()
+    first_data.pos = tensordictionary[0][0][:, :2]
+    first_data.y = tensordictionary[0][0][:, 2:4]
+    first_data.x = tensordictionary[0][0][:, 4:]
     first_data = create_graph_fromXYZ(first_data)
     first_data = compute_edge_lengths(first_data)
+
     for tensorList in tensordictionary:
         for tensor in tensorList:
             #print(str(type(tensor)))
             # I need to pass a data that has the discussed structure
-            data = Data_object(tensor)
-            #data.pos = tensor[:, :2]
-            data.set_graphs(first_data.edge_index, first_data.edge_attr)
+            data = Data()
+            data.pos = tensor[:, :2]
+            data.y = tensor[:, 2:4]
+            data.x = tensor[:, 4:]
+            data.pos = tensor[:, :2]
+            data.edge_index = first_data.edge_index
+            data.edge_attr = first_data.edge_attr
+
             graph_list.append(data)
     return graph_list
