@@ -14,39 +14,41 @@ from hydragnn.utils.thesis_work.parallel_read import parallel_processing
 
 class GraphDataset(AbstractBaseDataset):
 
-    def __init__(self):
+    def __init__(self, results_path):
         # Always initialize for multi-rank training.
         size, rank = hydragnn.utils.setup_ddp()
 
         # Read all the saved tensors
         self.tensordictionary = []
+        self.parallel_graphs = []
         self.graph_list = []  # Contains all the graphs created
         # Get the length of the result folder
-        input_path = "/Users/lorenzonebolosi/Desktop/Tesi/FreeFem_code/results/"
+        input_path = results_path#"/Users/lorenzonebolosi/Desktop/Tesi/FreeFem_code/results/"
         values = os.listdir(input_path)
         values.remove('.DS_Store')
         values.remove('mesh.msh')
         local_values = list(nsplit(values, size))[rank]
         print("Process "+str(rank)+" has data: "+str(len(local_values)))
-        parallel_graphs = parallel_processing(local_values)
+        #I receive different folders, each representing a different run of the FreeFem code
+        for local_value in local_values:
+            self.parallel_graphs.append(parallel_processing(local_value))
         # Each file has a tensor for every iteration. So each file represent a complete run of the FreeFem code.
         MPI.COMM_WORLD.Barrier()
 
-        print("Process "+str(rank)+" has produced: "+str(len(parallel_graphs))+" graphs")
-        deg = gather_deg(parallel_graphs)
+        print("Process "+str(rank)+" has produced: "+str(len(self.parallel_graphs))+" graphs")
+        #deg = gather_deg(parallel_graphs)
 
         ## pickle
         basedir = os.path.join(os.path.dirname(__file__), "dataset", "pickle")
         attrs = dict()
-        attrs["pna_deg"] = deg
+        attrs["pna_deg"] = 10 ##CHIEDERE CHE PARAMETRO E'
         SimplePickleWriter(
-            parallel_graphs,
+            self.parallel_graphs,
             basedir,
             "trainset",
             use_subdir=False,
             attrs=attrs,
         )
-
         #gathered_data = comm.gather(sendbuf, root=0)
         # if rank == 0:
         #     print("Gathered array of: " +str(len(gathered_data)))
