@@ -80,18 +80,17 @@ def convert_mesh_tensor():
 
 mesh_tensor = convert_mesh_tensor()
 
-def read_freeFEM_results(values):
+def read_freeFEM_results(value):
     # Dictionary of all the tensors
     tensordictionary = []
     # Get the length of the result folder
-    for value in values:
-        _, _, files = next(os.walk("/Users/lorenzonebolosi/Desktop/Tesi/FreeFem_code/results/" + value))
-        files.sort()
-        # -1 for the mesh and -1 for .DS_store. /2 for input output
-        file_count = int((len(files) - 2) / 2)
-        tensordictionary = tensordictionary + convert_files_to_tensor(file_count, value)
-        print("Succesfully converted: " + str(len(tensordictionary)) + " iterations data")
-        print("Each tensor has size: " + str(tensordictionary[0].size()))
+    _, _, files = next(os.walk("/Users/lorenzonebolosi/Desktop/Tesi/FreeFem_code/results/" + value+"/"))
+    files.sort()
+    # -1 for the mesh and -1 for .DS_store. /2 for input output
+    file_count = int((len(files) - 2) / 2)
+    tensordictionary = tensordictionary + convert_files_to_tensor(file_count, value)
+    print("Succesfully converted: " + str(len(tensordictionary)) + " iterations data")
+    print("Each tensor has size: " + str(tensordictionary[0].size()))
     return tensordictionary
 
 def parallel_processing(data):
@@ -109,6 +108,7 @@ def parallel_processing(data):
     first_data = create_graph_fromXYZ(first_data)
     first_data = compute_edge_lengths(first_data)
 
+    #Convert tensors in Data objects
     for tensor in tensordictionary:
 
         #print(str(type(tensor)))
