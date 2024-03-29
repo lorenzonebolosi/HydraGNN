@@ -24,7 +24,7 @@ def convert_files_to_tensor(number_of_iterations, value):
    #READ AND CONVERT U VALUES
    ################################
     for i in range(number_of_iterations):
-        with open("/Users/lorenzonebolosi/Desktop/Tesi/FreeFem_code/results/"+ value +"/output_iteration_"+str(i)+".txt", 'r') as f:
+        with open(os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/"+ value +"/output_iteration_"+str(i)+".txt", 'r') as f:
           u_values = f.read().split('\n')
 
         #Need to remove the last row that is always empty
@@ -40,7 +40,7 @@ def convert_files_to_tensor(number_of_iterations, value):
         #READ AND CONVERT W VALUES
         ################################
 
-        with open("/Users/lorenzonebolosi/Desktop/Tesi/FreeFem_code/results/"+ value +"/input_iteration_"+str(i)+".txt", 'r') as f:
+        with open(os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/"+ value +"/input_iteration_"+str(i)+".txt", 'r') as f:
             w_values = f.read().split('\n')
 
         #Need to remove the last row that is always empty
@@ -59,7 +59,7 @@ def convert_files_to_tensor(number_of_iterations, value):
 
 #Mesh tensor only once
 def convert_mesh_tensor():
-   with open("/Users/lorenzonebolosi/Desktop/Tesi/FreeFem_code/results/mesh.msh", 'r') as f:
+   with open(os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/mesh.msh", 'r') as f:
       mesh = f.read().split('\n')
 
    #Split before and after the Vertices info
@@ -84,7 +84,7 @@ def read_freeFEM_results(value):
     # Dictionary of all the tensors
     tensordictionary = []
     # Get the length of the result folder
-    _, _, files = next(os.walk("/Users/lorenzonebolosi/Desktop/Tesi/FreeFem_code/results/" + value+"/"))
+    _, _, files = next(os.walk(os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/" + value+"/"))
     files.sort()
     # -1 for the mesh and -1 for .DS_store. /2 for input output
     file_count = int((len(files) - 2) / 2)
