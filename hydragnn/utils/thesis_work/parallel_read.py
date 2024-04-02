@@ -103,8 +103,7 @@ def parallel_processing(data):
     #Create the edge only once
     first_data = Data()
     first_data.pos = tensordictionary[0][:, :2]
-    first_data.y = tensordictionary[0][:, 2:4]
-    first_data.x = tensordictionary[0][:, 4:]
+    first_data.x = tensordictionary[0][:, 2:]
     first_data = create_graph_fromXYZ(first_data)
     first_data = compute_edge_lengths(first_data)
 
@@ -115,11 +114,8 @@ def parallel_processing(data):
         # I need to pass a data that has the discussed structure
         data = Data()
         data.pos = tensor[:, :2]
-        data.y = tensor[:, 2:4]
-        data.x = tensor[:, 4:]
-        data.pos = tensor[:, :2]
+        data.x = tensor[:, 2:]
         data.edge_index = first_data.edge_index
         data.edge_attr = first_data.edge_attr
-
         graph_list.append(data)
     return graph_list
