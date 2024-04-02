@@ -2,7 +2,7 @@
 #PBS -S /bin/bash
 
 #PBS -l nodes=1:ppn=15,walltime=120:00:00 -q gigatlong
-#PBS -N HydraGNN-Long
+#PBS -N HydraGNN-Restart
 #PBS -j oe
 #PBS -o /u/nebolosi/stdout.txt
 #PBS -e /u/nebolosi/stderr.txt
@@ -25,4 +25,4 @@ export mkPrefix=/u/sw
 source ${mkPrefix}/etc/profile
 module load gcc-glibc/11.2.0
 sort ${PBS_NODEFILE} | uniq -c | awk '{printf("%s\n", $1);}' > mpd.nodes
-mpiexec -machinefile $PBS_NODEFILE -n 15 python3.9 -m mpi4py test.py --loadexistingsplit --inputfile custom-complex.json &>${OUT_DIR}/stdout_long.txt
+mpiexec -machinefile $PBS_NODEFILE -n 15 python3.9 -m mpi4py test.py --loadexistingsplit --inputfile custom-complex_restart.json &>${OUT_DIR}/stdout_restart.txt

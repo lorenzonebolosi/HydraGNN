@@ -7,6 +7,7 @@ from hydragnn.utils.distributed import nsplit
 
 from hydragnn.utils.abstractbasedataset import AbstractBaseDataset
 from hydragnn.utils.parallel_read import parallel_processing
+from sklearn.preprocessing import minmax_scale
 
 
 class GraphDataset(AbstractBaseDataset):

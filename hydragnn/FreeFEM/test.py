@@ -2,6 +2,7 @@ import os, json
 import logging
 import sys
 
+import numpy as np
 from mpi4py import MPI
 import argparse
 
@@ -9,11 +10,12 @@ import torch
 
 import hydragnn
 #sys.path.append(os.path.dirname(os.path.abspath(__file__))+'thesis_work')
+from hydragnn.utils import comm_reduce
 
 from hydragnn.utils.freefemdataset import GraphDataset
 from hydragnn.utils.time_utils import Timer
 from hydragnn.utils.config_utils import get_log_name_config
-from hydragnn.utils.model import print_model
+from hydragnn.utils.model import print_model, tensor_divide
 from hydragnn.utils.pickledataset import SimplePickleWriter, SimplePickleDataset
 from hydragnn.preprocess.load_data import split_dataset
 from hydragnn.preprocess.utils import gather_deg
@@ -22,6 +24,93 @@ import hydragnn.utils.tracer as tr
 
 def info(*args, logtype="info", sep=" "):
     getattr(logging, logtype)(sep.join(map(str, args)))
+
+#from raw data, get a dataset and normalize it
+def __normalize_dataset(not_normalized_dataset):
+
+    """Performs the normalization on Data objects and returns the normalized dataset."""
+    num_node_features = 3#len(not_normalized_dataset.node_feature_dim)
+    num_graph_features = 0#len(not_normalized_dataset.graph_feature_dim)
+
+    not_normalized_dataset.minmax_graph_feature = np.full((2, num_graph_features), np.inf)
+    # [0,...]:minimum values; [1,...]: maximum values
+    not_normalized_dataset.minmax_node_feature = np.full((2, num_node_features), np.inf)
+    not_normalized_dataset.minmax_graph_feature[1, :] *= -1
+    not_normalized_dataset.minmax_node_feature[1, :] *= -1
+    for data in not_normalized_dataset.dataset:
+        # find maximum and minimum values for graph level features
+        g_index_start = 0
+        #It shouldn't use this
+        for ifeat in range(num_graph_features):
+            g_index_end = g_index_start + not_normalized_dataset.graph_feature_dim[ifeat]
+            not_normalized_dataset.minmax_graph_feature[0, ifeat] = min(
+                torch.min(data.y[g_index_start:g_index_end]),
+                not_normalized_dataset.minmax_graph_feature[0, ifeat],
+            )
+            not_normalized_dataset.minmax_graph_feature[1, ifeat] = max(
+                torch.max(data.y[g_index_start:g_index_end]),
+                not_normalized_dataset.minmax_graph_feature[1, ifeat],
+            )
+            g_index_start = g_index_end
+
+        # find maximum and minimum values for node level features
+        n_index_start = 0
+        for ifeat in range(num_node_features):
+            n_index_end = n_index_start + config["Dataset"]["node_features"]["dim"][ifeat]
+            not_normalized_dataset.minmax_node_feature[0, ifeat] = min(
+                torch.min(data.x[:, n_index_start:n_index_end]),
+                not_normalized_dataset.minmax_node_feature[0, ifeat],
+            )
+            not_normalized_dataset.minmax_node_feature[1, ifeat] = max(
+                torch.max(data.x[:, n_index_start:n_index_end]),
+                not_normalized_dataset.minmax_node_feature[1, ifeat],
+            )
+            n_index_start = n_index_end
+
+    ## Gather minmax in parallel
+    not_normalized_dataset.minmax_graph_feature[0, :] = comm_reduce(
+        not_normalized_dataset.minmax_graph_feature[0, :], torch.distributed.ReduceOp.MIN
+    )
+    not_normalized_dataset.minmax_graph_feature[1, :] = comm_reduce(
+        not_normalized_dataset.minmax_graph_feature[1, :], torch.distributed.ReduceOp.MAX
+    )
+    not_normalized_dataset.minmax_node_feature[0, :] = comm_reduce(
+        not_normalized_dataset.minmax_node_feature[0, :], torch.distributed.ReduceOp.MIN
+    )
+    not_normalized_dataset.minmax_node_feature[1, :] = comm_reduce(
+        not_normalized_dataset.minmax_node_feature[1, :], torch.distributed.ReduceOp.MAX
+    )
+
+    for data in not_normalized_dataset.dataset:
+        g_index_start = 0
+        for ifeat in range(num_graph_features):
+            g_index_end = g_index_start + not_normalized_dataset.graph_feature_dim[ifeat]
+            data.y[g_index_start:g_index_end] = tensor_divide(
+                (
+                    data.y[g_index_start:g_index_end]
+                    - not_normalized_dataset.minmax_graph_feature[0, ifeat]
+                ),
+                (
+                    not_normalized_dataset.minmax_graph_feature[1, ifeat]
+                    - not_normalized_dataset.minmax_graph_feature[0, ifeat]
+                ),
+            )
+            g_index_start = g_index_end
+        n_index_start = 0
+        for ifeat in range(num_node_features):
+            n_index_end = n_index_start + config["Dataset"]["node_features"]["dim"][ifeat]
+            data.x[:, n_index_start:n_index_end] = tensor_divide(
+                (
+                    data.x[:, n_index_start:n_index_end]
+                    - not_normalized_dataset.minmax_node_feature[0, ifeat]
+                ),
+                (
+                    not_normalized_dataset.minmax_node_feature[1, ifeat]
+                    - not_normalized_dataset.minmax_node_feature[0, ifeat]
+                ),
+            )
+            n_index_start = n_index_end
+
 
 if __name__ == "__main__":
     #exec(os.path.dirname(os.path.abspath(__file__))+ "/freefemdataset.py")
@@ -94,6 +183,7 @@ if __name__ == "__main__":
     if not args.loadexistingsplit:
         total = GraphDataset(
             os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/")  # dirpwd + "/dataset/VASP_calculations/binaries", config, dist=True)
+        __normalize_dataset(total)
         print(len(total))
         trainset, valset, testset = split_dataset(
             dataset=total,

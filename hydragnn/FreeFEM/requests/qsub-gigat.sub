@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -S /bin/bash
 
-#PBS -l nodes=2:ppn=1,walltime=24:00:00 -q gigat
+#PBS -l nodes=1:ppn=10,walltime=24:00:00 -q gigat
 #PBS -N HydraGNN-Gigat
 #PBS -j oe
 #PBS -o /u/nebolosi/stdout.txt
@@ -26,6 +26,6 @@ cd ${EXE_DIR}
 export mkPrefix=/u/sw
 source ${mkPrefix}/etc/profile
 module load gcc-glibc/11.2.0
-sort ${PBS_NODEFILE} | uniq -c | awk '{printf("%s\n", $2);}' > mpd.nodes
-mpiexec -machinefile $PBS_NODEFILE -n 2 python3.9 -m mpi4py test.py &>${OUT_DIR}/stdout_gigat.txt
+
+mpiexec -machinefile $PBS_NODEFILE -n 10 python3.9 -m mpi4py test.py --loadexistingsplit &>${OUT_DIR}/stdout_gigat.txt
 # mpirun -machinefile $PBS_NODEFILE -n 2 python3.9 ${EXE_DIR}/${EXE_NAME} &>${OUT_DIR}/stdout.txt

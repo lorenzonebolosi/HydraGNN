@@ -1,14 +1,30 @@
 #!/bin/bash
 #PBS -S /bin/bash
-#PBS -l nodes=1:ppn=1,walltime=200:00:00 -q cerbero
-#PBS -N Training-complex
+
+#PBS -l nodes=1:ppn=10,walltime=24:00:00 -q gigat
+#PBS -N HydraGNN-Complex
 #PBS -j oe
 #PBS -o /u/nebolosi/stdout.txt
 #PBS -e /u/nebolosi/stderr.txt
-cd ${PBS_O_WORKDIR}
+# Directory where the output will be stored.
 OUT_DIR=/u/archive/laureandi/nebolosi/HydraGNN/hydragnn/FreeFEM/output
+
+# Directory and name of the executable.
+EXE_DIR=/u/archive/laureandi/nebolosi/HydraGNN/hydragnn/FreeFEM
+EXE_NAME=training.py
+
+echo "Creating output directory ${OUT_DIR}..." >> /u/nebolosi/qsub_log.txt
+
+# Force making the output directory, if it doesn't already exist.
+mkdir -p ${OUT_DIR}
+
+echo "Running simulation..." >> /u/nebolosi/qsub_log.txt
+
+# Run.
+cd ${EXE_DIR}
+
 export mkPrefix=/u/sw
 source ${mkPrefix}/etc/profile
 module load gcc-glibc/11.2.0
-cd /u/archive/laureandi/nebolosi/HydraGNN/hydragnn/FreeFEM/
-python3.9 training.py --inputfile custom-complex.json &>${OUT_DIR}/stdout_complex.txt
+
+mpiexec -machinefile $PBS_NODEFILE -n 10 python3.9 -m mpi4py test.py --loadexistingsplit --inputfile custom-complex.json &>${OUT_DIR}/stdout_complex.txt

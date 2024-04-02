@@ -1,0 +1,66 @@
+{
+  "Verbosity": {
+    "level": 2
+  },
+  "Dataset": {
+        "name": "tensors",
+        "format": "unit_test",
+        "compositional_stratified_splitting": true,
+        "rotational_invariance": false,
+        "path": {
+            "total": "dataset/unit_test_multihead"
+        },
+        "node_features": {
+            "name": ["ux","uy","w"],
+            "dim": [1, 1, 1],
+            "column_index": [0, 1, 2]
+        }
+    },
+  "NeuralNetwork": {
+    "Architecture": {
+      "model_type": "PNA",
+      "max_neighbours": 20,
+      "hidden_dim": 200,
+      "num_conv_layers": 6,
+      "radius": 5,
+      "output_heads": {
+        "node": {
+          "num_headlayers": [3],
+          "dim_headlayers": [25,25,25],
+          "type": "mlp"
+        }
+      },
+      "task_weights": [
+        1
+      ]
+    },
+    "Variables_of_interest": {
+      "input_node_features": [
+        0,
+        1
+      ],
+      "output_index": [
+        2
+      ],
+      "output_names":
+        ["w"],
+      "type": [
+        "node"
+      ]
+    },
+    "Training": {
+      "perc_train": 0.8,
+      "num_epoch": 20,
+      "batch_size":3,
+      "EarlyStopping": true,
+      "patience": 20,
+      "Checkpoint": true,
+      "checkpoint_delay": 0,
+      "continue": 1,
+      "startfrom": "PNA-r-5-ncl-6-hd-200-ne-20-lr-0.001-bs-3-data-tensors-node_ft-01-task_weights-1-",
+      "Optimizer": {
+        "learning_rate": 0.001
+      }
+    }
+  }
+}
