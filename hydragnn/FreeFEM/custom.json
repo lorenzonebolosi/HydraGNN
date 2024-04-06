@@ -1,0 +1,62 @@
+{
+  "Verbosity": {
+    "level": 2
+  },
+  "Dataset": {
+        "name": "tensors",
+        "format": "unit_test",
+        "compositional_stratified_splitting": true,
+        "rotational_invariance": false,
+        "path": {
+            "total": "dataset/unit_test_multihead"
+        },
+        "node_features": {
+            "name": ["ux","uy","w"],
+            "dim": [1, 1, 1],
+            "column_index": [0, 1, 2]
+        }
+    },
+  "NeuralNetwork": {
+    "Architecture": {
+      "model_type": "PNA",
+      "max_neighbours": 20,
+      "hidden_dim": 200,
+      "num_conv_layers": 6,
+      "radius": 5,
+      "output_heads": {
+        "node": {
+          "num_headlayers": [1],
+          "dim_headlayers": [1],
+          "type": "mlp"
+        }
+      },
+      "task_weights": [
+        1
+      ]
+    },
+    "Variables_of_interest": {
+      "input_node_features": [
+        0,
+        1
+      ],
+      "output_index": [
+        2
+      ],
+      "output_names":
+        ["w"],
+      "type": [
+        "node"
+      ]
+    },
+    "Training": {
+      "perc_train": 0.8,
+      "num_epoch": 3,
+      "batch_size": 1,
+      "continue": 0,
+      "startfrom": "existing_model",
+      "Optimizer": {
+        "learning_rate": 0.001
+      }
+    }
+  }
+}

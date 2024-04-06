@@ -5,3 +5,5 @@ tqdm
 tensorboard
 psutil
 sympy
+mpi4py
+pickle5
