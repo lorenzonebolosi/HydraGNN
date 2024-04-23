@@ -91,51 +91,6 @@ if __name__ == "__main__":
     if args.batch_size is not None:
         config["NeuralNetwork"]["Training"]["batch_size"] = args.batch_size
 
-    if not args.loadexistingsplit:
-        total = GraphDataset(
-            os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/")  # dirpwd + "/dataset/VASP_calculations/binaries", config, dist=True)
-        print(len(total))
-        trainset, valset, testset = split_dataset(
-            dataset=total,
-            perc_train=config["NeuralNetwork"]["Training"]["perc_train"],
-            stratify_splitting=False,
-        )
-        print(len(total), len(trainset), len(valset), len(testset))
-        deg = gather_deg(trainset)
-        config["pna_deg"] = deg
-        setnames = ["trainset", "valset", "testset"]
-        ## pickle
-        if args.format == "pickle":
-            basedir = os.path.join(os.getcwd()+ "/dataset", "%s.pickle" % modelname)
-
-            attrs = dict()
-            attrs["pna_deg"] = deg
-            SimplePickleWriter(
-                trainset,
-                basedir,
-                "trainset",
-                # minmax_node_feature=total.minmax_node_feature,
-                # minmax_graph_feature=total.minmax_graph_feature,
-                use_subdir=True,
-                attrs=attrs,
-            )
-            SimplePickleWriter(
-                valset,
-                basedir,
-                "valset",
-                # minmax_node_feature=total.minmax_node_feature,
-                # minmax_graph_feature=total.minmax_graph_feature,
-                use_subdir=True,
-            )
-            SimplePickleWriter(
-                testset,
-                basedir,
-                "testset",
-                # minmax_node_feature=total.minmax_node_feature,
-                # minmax_graph_feature=total.minmax_graph_feature,
-                use_subdir=True,
-            )
-        sys.exit(0)
 
     tr.initialize()
     tr.disable()

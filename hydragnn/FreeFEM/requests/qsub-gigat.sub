@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -S /bin/bash
+
+#PBS -l nodes=2:ppn=1,walltime=24:00:00 -q gigat
+#PBS -N HydraGNN-Gigat
+#PBS -j oe
+#PBS -o /u/nebolosi/stdout.txt
+#PBS -e /u/nebolosi/stderr.txt
+# Directory where the output will be stored.
+OUT_DIR=/u/archive/laureandi/nebolosi/HydraGNN/hydragnn/FreeFEM/output
+
+# Directory and name of the executable.
+EXE_DIR=/u/archive/laureandi/nebolosi/HydraGNN/hydragnn/FreeFEM
+EXE_NAME=training.py
+
+echo "Creating output directory ${OUT_DIR}..." >> /u/nebolosi/qsub_log.txt
+
+# Force making the output directory, if it doesn't already exist.
+mkdir -p ${OUT_DIR}
+
+echo "Running simulation..." >> /u/nebolosi/qsub_log.txt
+
+# Run.
+cd ${EXE_DIR}
+
+export mkPrefix=/u/sw
+source ${mkPrefix}/etc/profile
+module load gcc-glibc/11.2.0
+sort ${PBS_NODEFILE} | uniq -c | awk '{printf("%s\n", $2);}' > mpd.nodes
+mpiexec -machinefile $PBS_NODEFILE -n 2 python3.9 -m mpi4py test.py &>${OUT_DIR}/stdout_gigat.txt
+# mpirun -machinefile $PBS_NODEFILE -n 2 python3.9 ${EXE_DIR}/${EXE_NAME} &>${OUT_DIR}/stdout.txt
