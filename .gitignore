@@ -19,3 +19,4 @@ hydragnn/utils/thesis_work/tensors/random_v_7.pt
 hydragnn/utils/thesis_work/tensors/random_v_8.pt
 hydragnn/utils/thesis_work/tensors/random_v_9.pt
 examples/FreeFEM/test.py
+/hydragnn/FreeFEM/freeFEM_results/

@@ -27,7 +27,7 @@ def info(*args, logtype="info", sep=" "):
 
 #from raw data, get a dataset and normalize it
 def __normalize_dataset(not_normalized_dataset):
-
+    print("Start normalization")
     """Performs the normalization on Data objects and returns the normalized dataset."""
     num_node_features = 3#len(not_normalized_dataset.node_feature_dim)
     num_graph_features = 0#len(not_normalized_dataset.graph_feature_dim)
@@ -66,7 +66,8 @@ def __normalize_dataset(not_normalized_dataset):
                 not_normalized_dataset.minmax_node_feature[1, ifeat],
             )
             n_index_start = n_index_end
-
+    print("Max and min values found")
+    print("Minmax node feature: ", not_normalized_dataset.minmax_node_feature)
     ## Gather minmax in parallel
     not_normalized_dataset.minmax_graph_feature[0, :] = comm_reduce(
         not_normalized_dataset.minmax_graph_feature[0, :], torch.distributed.ReduceOp.MIN
@@ -110,7 +111,7 @@ def __normalize_dataset(not_normalized_dataset):
                 ),
             )
             n_index_start = n_index_end
-
+    print("Normalization done")
 
 if __name__ == "__main__":
     #exec(os.path.dirname(os.path.abspath(__file__))+ "/freefemdataset.py")
