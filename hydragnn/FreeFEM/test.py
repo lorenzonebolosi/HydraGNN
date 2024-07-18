@@ -273,134 +273,134 @@ if __name__ == "__main__":
         #__normalize_dataset(total)
         # Example usage with a list of data objects
         data_objects = total  # Replace with your actual data objects
-    #    plot_iterations(data_objects, 'plots')
-    #     print(len(total))
-    #     trainset, valset, testset = split_dataset(
-    #         dataset=total,
-    #         perc_train=config["NeuralNetwork"]["Training"]["perc_train"],
-    #         stratify_splitting=False,
-    #     )
-    #
-    #     print(len(total), len(trainset), len(valset), len(testset))
-    #     deg = gather_deg(trainset)
-    #     config["pna_deg"] = deg
-    #     setnames = ["trainset", "valset", "testset"]
-    #     ## pickle
-    #     if args.format == "pickle":
-    #         basedir = os.path.join(os.getcwd()+ "/dataset", "%s.pickle" % modelname)
-    #
-    #         attrs = dict()
-    #         attrs["pna_deg"] = deg
-    #         SimplePickleWriter(
-    #             trainset,
-    #             basedir,
-    #             "trainset",
-    #             # minmax_node_feature=total.minmax_node_feature,
-    #             # minmax_graph_feature=total.minmax_graph_feature,
-    #             use_subdir=True,
-    #             attrs=attrs,
-    #         )
-    #         SimplePickleWriter(
-    #             valset,
-    #             basedir,
-    #             "valset",
-    #             # minmax_node_feature=total.minmax_node_feature,
-    #             # minmax_graph_feature=total.minmax_graph_feature,
-    #             use_subdir=True,
-    #         )
-    #         SimplePickleWriter(
-    #             testset,
-    #             basedir,
-    #             "testset",
-    #             # minmax_node_feature=total.minmax_node_feature,
-    #             # minmax_graph_feature=total.minmax_graph_feature,
-    #             use_subdir=True,
-    #         )
-    #     sys.exit(0)
-    #
-    # tr.initialize()
-    # tr.disable()
-    # timer = Timer("load_data")
-    # timer.start()
-    #
-    # timer = Timer("load_data")
-    # timer.start()
-    #
-    # if args.format == "pickle":
-    #     info("Pickle load")
-    #     basedir = os.path.join(os.getcwd()+ "/dataset", "%s.pickle" % modelname)
-    #     trainset = SimplePickleDataset(basedir=basedir, label="trainset", var_config=var_config)
-    #     valset = SimplePickleDataset(basedir=basedir, label="valset", var_config=var_config)
-    #     testset = SimplePickleDataset(basedir=basedir, label="testset", var_config=var_config)
-    #
-    #
-    #     # minmax_node_feature = trainset.minmax_node_feature
-    #     # minmax_graph_feature = trainset.minmax_graph_feature
-    #     pna_deg = trainset.pna_deg
-    # else:
-    #     raise ValueError("Unknown data format: %d" % args.format)
-    # ## Set minmax
-    # config["NeuralNetwork"]["Variables_of_interest"][
-    #     "minmax_node_feature"
-    # ] = trainset.minmax_node_feature
-    # config["NeuralNetwork"]["Variables_of_interest"][
-    #     "minmax_graph_feature"
-    # ] = trainset.minmax_graph_feature
-    #
-    # info(
-    #     "trainset,valset,testset size: %d %d %d"
-    #     % (len(trainset), len(valset), len(testset))
-    # )
-    #
-    # (train_loader, val_loader, test_loader,) = hydragnn.preprocess.create_dataloaders(
-    #     trainset, valset, testset, config["NeuralNetwork"]["Training"]["batch_size"]
-    # )
-    # timer.stop()
-    #
-    # config = hydragnn.utils.update_config(config, train_loader, val_loader, test_loader)
-    # config["NeuralNetwork"]["Variables_of_interest"].pop("minmax_node_feature", None)
-    # config["NeuralNetwork"]["Variables_of_interest"].pop("minmax_graph_feature", None)
-    #
-    # verbosity = config["Verbosity"]["level"]
-    # model = hydragnn.models.create_model_config(
-    #     config=config["NeuralNetwork"],
-    #     verbosity=verbosity,
-    # )
-    # if rank == 0:
-    #     print_model(model)
-    # comm.Barrier()
-    #
-    # model = hydragnn.utils.get_distributed_model(model, verbosity)
-    #
-    # learning_rate = config["NeuralNetwork"]["Training"]["Optimizer"]["learning_rate"]
-    # optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
-    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-    #     optimizer, mode="min", factor=0.5, patience=5, min_lr=0.00001
-    # )
-    #
-    # log_name = get_log_name_config(config)
-    # writer = hydragnn.utils.get_summary_writer(log_name)
-    #
-    # if torch.distributed.is_initialized():
-    #     torch.distributed.barrier()
-    #
-    # hydragnn.utils.save_config(config, log_name)
-    #
-    # hydragnn.train.train_validate_test(
-    #     model,
-    #     optimizer,
-    #     train_loader,
-    #     val_loader,
-    #     test_loader,
-    #     writer,
-    #     scheduler,
-    #     config["NeuralNetwork"],
-    #     log_name,
-    #     verbosity,
-    #     create_plots=True,
-    # )
-    #
-    # hydragnn.utils.save_model(model, optimizer, log_name)
-    # hydragnn.utils.print_timers(verbosity)
-    #
-    # sys.exit(0)
+        #plot_iterations(data_objects, 'plots')
+        print(len(total))
+        trainset, valset, testset = split_dataset(
+            dataset=total,
+            perc_train=config["NeuralNetwork"]["Training"]["perc_train"],
+            stratify_splitting=False,
+        )
+
+        print(len(total), len(trainset), len(valset), len(testset))
+        deg = gather_deg(trainset)
+        config["pna_deg"] = deg
+        setnames = ["trainset", "valset", "testset"]
+        ## pickle
+        if args.format == "pickle":
+            basedir = os.path.join(os.getcwd()+ "/dataset", "%s.pickle" % modelname)
+
+            attrs = dict()
+            attrs["pna_deg"] = deg
+            SimplePickleWriter(
+                trainset,
+                basedir,
+                "trainset",
+                # minmax_node_feature=total.minmax_node_feature,
+                # minmax_graph_feature=total.minmax_graph_feature,
+                use_subdir=True,
+                attrs=attrs,
+            )
+            SimplePickleWriter(
+                valset,
+                basedir,
+                "valset",
+                # minmax_node_feature=total.minmax_node_feature,
+                # minmax_graph_feature=total.minmax_graph_feature,
+                use_subdir=True,
+            )
+            SimplePickleWriter(
+                testset,
+                basedir,
+                "testset",
+                # minmax_node_feature=total.minmax_node_feature,
+                # minmax_graph_feature=total.minmax_graph_feature,
+                use_subdir=True,
+            )
+        sys.exit(0)
+
+    tr.initialize()
+    tr.disable()
+    timer = Timer("load_data")
+    timer.start()
+
+    timer = Timer("load_data")
+    timer.start()
+
+    if args.format == "pickle":
+        info("Pickle load")
+        basedir = os.path.join(os.getcwd()+ "/dataset", "%s.pickle" % modelname)
+        trainset = SimplePickleDataset(basedir=basedir, label="trainset", var_config=var_config)
+        valset = SimplePickleDataset(basedir=basedir, label="valset", var_config=var_config)
+        testset = SimplePickleDataset(basedir=basedir, label="testset", var_config=var_config)
+
+
+        # minmax_node_feature = trainset.minmax_node_feature
+        # minmax_graph_feature = trainset.minmax_graph_feature
+        pna_deg = trainset.pna_deg
+    else:
+        raise ValueError("Unknown data format: %d" % args.format)
+    ## Set minmax
+    config["NeuralNetwork"]["Variables_of_interest"][
+        "minmax_node_feature"
+    ] = trainset.minmax_node_feature
+    config["NeuralNetwork"]["Variables_of_interest"][
+        "minmax_graph_feature"
+    ] = trainset.minmax_graph_feature
+
+    info(
+        "trainset,valset,testset size: %d %d %d"
+        % (len(trainset), len(valset), len(testset))
+    )
+
+    (train_loader, val_loader, test_loader,) = hydragnn.preprocess.create_dataloaders(
+        trainset, valset, testset, config["NeuralNetwork"]["Training"]["batch_size"]
+    )
+    timer.stop()
+
+    config = hydragnn.utils.update_config(config, train_loader, val_loader, test_loader)
+    config["NeuralNetwork"]["Variables_of_interest"].pop("minmax_node_feature", None)
+    config["NeuralNetwork"]["Variables_of_interest"].pop("minmax_graph_feature", None)
+
+    verbosity = config["Verbosity"]["level"]
+    model = hydragnn.models.create_model_config(
+        config=config["NeuralNetwork"],
+        verbosity=verbosity,
+    )
+    if rank == 0:
+        print_model(model)
+    comm.Barrier()
+
+    model = hydragnn.utils.get_distributed_model(model, verbosity)
+
+    learning_rate = config["NeuralNetwork"]["Training"]["Optimizer"]["learning_rate"]
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode="min", factor=0.5, patience=5, min_lr=0.00001
+    )
+
+    log_name = get_log_name_config(config)
+    writer = hydragnn.utils.get_summary_writer(log_name)
+
+    if torch.distributed.is_initialized():
+        torch.distributed.barrier()
+
+    hydragnn.utils.save_config(config, log_name)
+
+    hydragnn.train.train_validate_test(
+        model,
+        optimizer,
+        train_loader,
+        val_loader,
+        test_loader,
+        writer,
+        scheduler,
+        config["NeuralNetwork"],
+        log_name,
+        verbosity,
+        create_plots=True,
+    )
+
+    hydragnn.utils.save_model(model, optimizer, log_name)
+    hydragnn.utils.print_timers(verbosity)
+
+    sys.exit(0)
