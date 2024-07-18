@@ -129,7 +129,8 @@ def parallel_processing(data):
     first_data = Data()
     first_data.pos = tensordictionary[0][:, :2]
     first_data.x = tensordictionary[0][:, 2:]
-    first_data.edge_index = read_edges()#create_graph_fromXYZ(first_data)
+    #first_data.edge_index = read_edges()
+    first_data = create_graph_fromXYZ(first_data)
     print("Size of edge index is: "+str(first_data.edge_index.size()))
     first_data = compute_edge_lengths(first_data)
 
