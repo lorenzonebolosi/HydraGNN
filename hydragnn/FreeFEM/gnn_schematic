@@ -1,0 +1,114 @@
+// GNN Architecture
+digraph {
+	Input [label="Input Layer"]
+	Conv1 [label="Graph Conv 1"]
+	AggrModule1 [label="Aggr Module 1
+(avg_deg_lin, avg_deg_log)"]
+	PreNN1 [label="Pre NN 1
+(weight, bias)"]
+	PostNN1 [label="Post NN 1
+(weight, bias)"]
+	Lin1 [label="Lin 1
+(weight, bias)"]
+	Conv1 -> AggrModule1
+	AggrModule1 -> PreNN1
+	PreNN1 -> PostNN1
+	PostNN1 -> Lin1
+	Input -> Conv1
+	Conv2 [label="Graph Conv 2"]
+	AggrModule2 [label="Aggr Module 2
+(avg_deg_lin, avg_deg_log)"]
+	PreNN2 [label="Pre NN 2
+(weight, bias)"]
+	PostNN2 [label="Post NN 2
+(weight, bias)"]
+	Lin2 [label="Lin 2
+(weight, bias)"]
+	Conv2 -> AggrModule2
+	AggrModule2 -> PreNN2
+	PreNN2 -> PostNN2
+	PostNN2 -> Lin2
+	Lin1 -> Conv2
+	Conv3 [label="Graph Conv 3"]
+	AggrModule3 [label="Aggr Module 3
+(avg_deg_lin, avg_deg_log)"]
+	PreNN3 [label="Pre NN 3
+(weight, bias)"]
+	PostNN3 [label="Post NN 3
+(weight, bias)"]
+	Lin3 [label="Lin 3
+(weight, bias)"]
+	Conv3 -> AggrModule3
+	AggrModule3 -> PreNN3
+	PreNN3 -> PostNN3
+	PostNN3 -> Lin3
+	Lin2 -> Conv3
+	Conv4 [label="Graph Conv 4"]
+	AggrModule4 [label="Aggr Module 4
+(avg_deg_lin, avg_deg_log)"]
+	PreNN4 [label="Pre NN 4
+(weight, bias)"]
+	PostNN4 [label="Post NN 4
+(weight, bias)"]
+	Lin4 [label="Lin 4
+(weight, bias)"]
+	Conv4 -> AggrModule4
+	AggrModule4 -> PreNN4
+	PreNN4 -> PostNN4
+	PostNN4 -> Lin4
+	Lin3 -> Conv4
+	Conv5 [label="Graph Conv 5"]
+	AggrModule5 [label="Aggr Module 5
+(avg_deg_lin, avg_deg_log)"]
+	PreNN5 [label="Pre NN 5
+(weight, bias)"]
+	PostNN5 [label="Post NN 5
+(weight, bias)"]
+	Lin5 [label="Lin 5
+(weight, bias)"]
+	Conv5 -> AggrModule5
+	AggrModule5 -> PreNN5
+	PreNN5 -> PostNN5
+	PostNN5 -> Lin5
+	Lin4 -> Conv5
+	Conv6 [label="Graph Conv 6"]
+	AggrModule6 [label="Aggr Module 6
+(avg_deg_lin, avg_deg_log)"]
+	PreNN6 [label="Pre NN 6
+(weight, bias)"]
+	PostNN6 [label="Post NN 6
+(weight, bias)"]
+	Lin6 [label="Lin 6
+(weight, bias)"]
+	Conv6 -> AggrModule6
+	AggrModule6 -> PreNN6
+	PreNN6 -> PostNN6
+	PostNN6 -> Lin6
+	Lin5 -> Conv6
+	FeatureLayer1 [label="Feature Layer 1
+(weight, bias, running_mean, running_var, num_batches_tracked)"]
+	Lin6 -> FeatureLayer1
+	FeatureLayer2 [label="Feature Layer 2
+(weight, bias, running_mean, running_var, num_batches_tracked)"]
+	FeatureLayer1 -> FeatureLayer2
+	FeatureLayer3 [label="Feature Layer 3
+(weight, bias, running_mean, running_var, num_batches_tracked)"]
+	FeatureLayer2 -> FeatureLayer3
+	FeatureLayer4 [label="Feature Layer 4
+(weight, bias, running_mean, running_var, num_batches_tracked)"]
+	FeatureLayer3 -> FeatureLayer4
+	FeatureLayer5 [label="Feature Layer 5
+(weight, bias, running_mean, running_var, num_batches_tracked)"]
+	FeatureLayer4 -> FeatureLayer5
+	FeatureLayer6 [label="Feature Layer 6
+(weight, bias, running_mean, running_var, num_batches_tracked)"]
+	FeatureLayer5 -> FeatureLayer6
+	HeadNN1 [label="Head NN 1
+(mlp weights and biases)"]
+	FeatureLayer6 -> HeadNN1
+	HeadNN2 [label="Head NN 2
+(mlp weights and biases)"]
+	HeadNN1 -> HeadNN2
+	Output [label="Output Layer"]
+	HeadNN2 -> Output
+}

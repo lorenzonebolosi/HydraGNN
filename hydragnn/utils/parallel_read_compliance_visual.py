@@ -1,6 +1,7 @@
 import os
 
 import torch
+from matplotlib import pyplot as plt
 from mpi4py import MPI
 import numpy as np
 from torch_geometric.transforms import RadiusGraph, Distance
@@ -20,9 +21,11 @@ def convert_files_to_tensor(number_of_iterations, value):
 
     #Final list of all tensors
     final_list = []
+    output_dir = 'compliance_graphs/'
    ################################
    #READ AND CONVERT U VALUES
    ################################
+    compliance_array= [None] * 400
     for i in range(number_of_iterations):
         with open(os.getcwd()+"/freeFEM_results/"+ value +"/output_iteration_"+str(i)+".txt", 'r') as f:
           u_values = f.read().split('\n')
@@ -34,7 +37,27 @@ def convert_files_to_tensor(number_of_iterations, value):
 
         # Convert the list of lists into a PyTorch tensor
         u_tensor = torch.tensor(u_values, dtype=torch.float32)
-        torch.unique(u_tensor, dim=0)
+        #torch.unique(u_tensor, dim=0)
+
+        ################################
+        # Read compliance
+        ################################
+
+        with open(os.getcwd() + "/compliance/" + value + "/compliance_" + str(i) + ".txt", 'r') as f:
+            compliance = f.read().split('\n')
+
+        # Need to remove the last row that is always empty
+        end_index = len(compliance) - 1
+        compliance = compliance[:end_index]
+        compliance = [list(map(float, line.split())) for line in compliance]
+        compliance = compliance[0] *4961
+
+
+        # Convert the list of lists into a PyTorch tensor
+        compliance_tensor = torch.tensor(compliance, dtype=torch.float32)
+        compliance_tensor = torch.reshape(compliance_tensor, (4961, 1))
+        compliance_array[i] = compliance_tensor.data[0]
+        # torch.unique(compliance, dim=0)
 
         ################################
         #READ AND CONVERT W VALUES
@@ -50,10 +73,21 @@ def convert_files_to_tensor(number_of_iterations, value):
 
         # Convert the list of lists into a PyTorch tensor
         w_tensor = torch.tensor(w_values, dtype=torch.float32)
-        torch.unique(w_tensor, dim=0)
-        output = torch.cat((mesh_tensor, u_tensor, w_tensor),1)
+        #torch.unique(w_tensor, dim=0)
+        output = torch.cat((mesh_tensor, u_tensor, w_tensor, compliance_tensor),1)
         final_list.append(output)
 
+    plt.plot(compliance_array)
+    plt.title('Compliance run:' + value)
+    # Add x and y labels
+    plt.xlabel('Iteration number')
+    plt.ylabel('Compliance value')
+    # Display the plot
+    plt.tight_layout()
+
+    filename = os.path.join(os.getcwd()+'/'+output_dir, value+'.png')
+    plt.savefig(filename)
+    plt.close()
     return final_list
 
 
@@ -79,29 +113,6 @@ def convert_mesh_tensor():
    # Print the resulting tensor
    #print(mesh_tensor)
    return mesh_tensor
-
-def read_edges():
-
-    cwd = os.getcwd()
-    with open(os.getcwd() + "/freeFEM_results/mesh.msh", 'r') as f:
-        mesh = f.read().split('\n')
-
-    num_nodes, num_elements, _ = map(int, mesh[0].split())
-
-
-    # Extract element (triangle) information
-    elements = mesh[num_nodes + 1:num_nodes + 1 + num_elements]
-
-    # Parse element information to get edge indices
-    edge_index = []
-    for line in elements:
-        indices = list(map(int, line.split()[:3]))
-        edge_index.append([indices[0] - 1, indices[1] - 1])  # Convert to 0-based index
-        edge_index.append([indices[1] - 1, indices[2] - 1])
-        edge_index.append([indices[2] - 1, indices[0] - 1])
-
-    edge_index = torch.tensor(edge_index, dtype=torch.long).t().contiguous()  # Transpose to get the correct shape
-    return edge_index
 
 mesh_tensor = convert_mesh_tensor()
 
@@ -129,7 +140,7 @@ def parallel_processing(data):
     first_data = Data()
     first_data.pos = tensordictionary[0][:, :2]
     first_data.x = tensordictionary[0][:, 2:]
-    first_data.edge_index = read_edges()#create_graph_fromXYZ(first_data)
+    first_data = create_graph_fromXYZ(first_data)
     first_data = compute_edge_lengths(first_data)
 
     #Convert tensors in Data objects
@@ -139,7 +150,8 @@ def parallel_processing(data):
         # I need to pass a data that has the discussed structure
         data = Data()
         data.pos = tensor[:, :2]
-        data.x = tensor[:, 2:]
+        data.x = tensor[:, 2:5]
+        data.y = tensor[:, 5:][0]
         data.edge_index = first_data.edge_index
         data.edge_attr = first_data.edge_attr
         graph_list.append(data)

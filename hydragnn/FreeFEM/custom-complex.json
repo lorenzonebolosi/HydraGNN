@@ -26,32 +26,38 @@
       "output_heads": {
         "node": {
           "num_headlayers": [3],
-          "dim_headlayers": [50,50,50],
+          "dim_headlayers": [15,15,15],
           "type": "mlp"
         }
       },
       "task_weights": [
-        1
+        1,1
       ]
     },
     "Variables_of_interest": {
       "input_node_features": [
+        2
+      ],
+      "output_index": [
         0,
         1
       ],
-      "output_index": [
-        2
+      "output_dim":[
+        1,
+        1
       ],
-      "output_names":
-        ["w"],
+      "output_names": [
+        "ux",
+          "uy"
+      ],
       "type": [
-        "node"
+        "node","node"
       ]
     },
     "Training": {
       "perc_train": 0.8,
-      "num_epoch": 3,
-      "batch_size":15,
+      "num_epoch": 15,
+      "batch_size":3,
       "continue": 0,
       "startfrom": "existing_model",
       "Optimizer": {

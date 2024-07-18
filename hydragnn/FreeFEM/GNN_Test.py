@@ -1,4 +1,4 @@
-#Look at inference.py for the usage of a pre-trained model
+# Look at inference.py for the usage of a pre-trained model
 
 ##############################################################################
 # Copyright (c) 2021, Oak Ridge National Laboratory                          #
@@ -11,7 +11,10 @@
 # SPDX-License-Identifier: BSD-3-Clause                                      #
 ##############################################################################
 
+
 import json, os
+# import tensorflow as tf
+# tfk = tf.keras
 import sys
 import logging
 import pickle
@@ -47,31 +50,31 @@ plt.rcParams.update({"font.size": 16})
 
 def get_log_name_config(config):
     return (
-        config["NeuralNetwork"]["Architecture"]["model_type"]
-        + "-r-"
-        + str(config["NeuralNetwork"]["Architecture"]["radius"])
-        + "-ncl-"
-        + str(config["NeuralNetwork"]["Architecture"]["num_conv_layers"])
-        + "-hd-"
-        + str(config["NeuralNetwork"]["Architecture"]["hidden_dim"])
-        + "-ne-"
-        + str(config["NeuralNetwork"]["Training"]["num_epoch"])
-        + "-lr-"
-        + str(config["NeuralNetwork"]["Training"]["Optimizer"]["learning_rate"])
-        + "-bs-"
-        + str(config["NeuralNetwork"]["Training"]["batch_size"])
-        + "-node_ft-"
-        + "".join(
-            str(x)
-            for x in config["NeuralNetwork"]["Variables_of_interest"][
-                "input_node_features"
-            ]
-        )
-        + "-task_weights-"
-        + "".join(
-            str(weigh) + "-"
-            for weigh in config["NeuralNetwork"]["Architecture"]["task_weights"]
-        )
+            config["NeuralNetwork"]["Architecture"]["model_type"]
+            + "-r-"
+            + str(config["NeuralNetwork"]["Architecture"]["radius"])
+            + "-ncl-"
+            + str(config["NeuralNetwork"]["Architecture"]["num_conv_layers"])
+            + "-hd-"
+            + str(config["NeuralNetwork"]["Architecture"]["hidden_dim"])
+            + "-ne-"
+            + str(config["NeuralNetwork"]["Training"]["num_epoch"])
+            + "-lr-"
+            + str(config["NeuralNetwork"]["Training"]["Optimizer"]["learning_rate"])
+            + "-bs-"
+            + str(config["NeuralNetwork"]["Training"]["batch_size"])
+            + "-node_ft-"
+            + "".join(
+        str(x)
+        for x in config["NeuralNetwork"]["Variables_of_interest"][
+            "input_node_features"
+        ]
+    )
+            + "-task_weights-"
+            + "".join(
+        str(weigh) + "-"
+        for weigh in config["NeuralNetwork"]["Architecture"]["task_weights"]
+    )
     )
 
 
@@ -106,11 +109,12 @@ def info(*args, logtype="info", sep=" "):
 
 if __name__ == "__main__":
 
-    modelname = "test_run"
+    modelname = "PNA-r-5-ncl-6-hd-200-ne-15-lr-0.001-bs-3-data-tensors-node_ft-2-task_weights-1-1-"
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--inputfile", help="input file", type=str, default="./logs/test_run/config.json"
+        "--inputfile", help="input file", type=str,
+        default="./logs/PNA-r-5-ncl-6-hd-200-ne-15-lr-0.001-bs-3-data-tensors-node_ft-2-task_weights-1-1-/config.json"
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
@@ -180,13 +184,14 @@ if __name__ == "__main__":
     model = torch.nn.parallel.DistributedDataParallel(model)
 
     load_existing_model(model, modelname, path="./logs/")
+    # tfk.utils.plot_model(model)
     model.eval()
 
     variable_index = 0
     for output_name, output_type, output_dim in zip(
-        config["NeuralNetwork"]["Variables_of_interest"]["output_names"],
-        config["NeuralNetwork"]["Variables_of_interest"]["type"],
-        config["NeuralNetwork"]["Variables_of_interest"]["output_dim"],
+            config["NeuralNetwork"]["Variables_of_interest"]["output_names"],
+            config["NeuralNetwork"]["Variables_of_interest"]["type"],
+            config["NeuralNetwork"]["Variables_of_interest"]["output_dim"],
     ):
 
         test_MAE = 0.0
@@ -198,7 +203,7 @@ if __name__ == "__main__":
         for data_id, data in enumerate(tqdm(testset)):
             predicted = model(data.to(get_device()))
             predicted = predicted[variable_index].flatten()
-            #Might try to add here a normalization of the predicted values over the integral
+            # Might try to add here a normalization of the predicted values over the integral
             start = data.y_loc[0][variable_index].item()
             end = data.y_loc[0][variable_index + 1].item()
             true = data.y[start:end, 0]
