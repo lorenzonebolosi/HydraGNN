@@ -115,21 +115,7 @@ def convert_mesh_tensor(input_dir):
 
    return data
 
-   #Split before and after the Vertices info
-   end_index = int(mesh[0].split()[0]) + 1
-   mesh = mesh[1:end_index]
 
-   # Parse the string into numerical values
-   #data_lines = mesh.strip().split('\n')
-   mesh_values = [list(map(float, line.split())) for line in mesh]
-
-   # Convert the list of lists into a PyTorch tensor
-   mesh_tensor = torch.tensor(mesh_values, dtype=torch.float32)
-   mesh_tensor = mesh_tensor[: , [0,1]]
-   #print(mesh_tensor.size())
-   # Print the resulting tensor
-   #print(mesh_tensor)
-   return mesh_tensor
 
 def get_log_name_config(config):
     return (
@@ -290,7 +276,6 @@ if __name__ == "__main__":
     input_dir = os.path.join(dirpwd, input_folder)
     # Create the edge only once
     first_data = convert_mesh_tensor(input_dir)
-    edge_index = first_data.edge_index.detach().numpy()
     first_data = compute_edge_lengths(first_data)
     data_and_model = data_and_model(model, first_data)
     model.eval()

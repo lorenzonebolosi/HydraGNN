@@ -80,6 +80,29 @@ def convert_mesh_tensor():
    #print(mesh_tensor)
    return mesh_tensor
 
+def read_edges():
+
+    cwd = os.getcwd()
+    with open(os.getcwd() + "/freeFEM_results/mesh.msh", 'r') as f:
+        mesh = f.read().split('\n')
+
+    num_nodes, num_elements, _ = map(int, mesh[0].split())
+
+
+    # Extract element (triangle) information
+    elements = mesh[num_nodes + 1:num_nodes + 1 + num_elements]
+
+    # Parse element information to get edge indices
+    edge_index = []
+    for line in elements:
+        indices = list(map(int, line.split()[:3]))
+        edge_index.append([indices[0] - 1, indices[1] - 1])  # Convert to 0-based index
+        edge_index.append([indices[1] - 1, indices[2] - 1])
+        edge_index.append([indices[2] - 1, indices[0] - 1])
+
+    edge_index = torch.tensor(edge_index, dtype=torch.long).t().contiguous()  # Transpose to get the correct shape
+    return edge_index
+
 mesh_tensor = convert_mesh_tensor()
 
 def read_freeFEM_results(value):
@@ -106,7 +129,7 @@ def parallel_processing(data):
     first_data = Data()
     first_data.pos = tensordictionary[0][:, :2]
     first_data.x = tensordictionary[0][:, 2:]
-    first_data = create_graph_fromXYZ(first_data)
+    first_data.edge_index = read_edges()#create_graph_fromXYZ(first_data)
     first_data = compute_edge_lengths(first_data)
 
     #Convert tensors in Data objects
