@@ -72,7 +72,7 @@ def convert_w_to_tensor(iteration_number):
     end_index = len(w_values) - 1
     w_values = w_values[:end_index]
     w_values = [list(map(float, line.split())) for line in w_values]
-
+    print("Converted: " + str(len(w_values)) + " w values to tensor")
     # Convert the list of lists into a PyTorch tensor
     w_tensor = torch.tensor(w_values, dtype=torch.float32)
     #torch.unique(w_tensor, dim=0)
@@ -189,8 +189,8 @@ class Handler(FileSystemEventHandler):
         self.data_and_model = data_and_model
     def on_created(self, event):
         #I want to discard the event generated from the output of the neural network
-        if event.is_directory or event.src_path[-5:-4] != str(data_and_model.get_iteration_number()):
-            print(f"Received created event - {event.src_path}")
+        if event.is_directory or "input_iteration" not in event.src_path :
+            print(f"Received created event - {event.src_path}, but won't process it")
             return None
         else:
             # Here you can add your own action to be performed on the new file
@@ -199,7 +199,11 @@ class Handler(FileSystemEventHandler):
             data.pos = data_and_model.get_data().pos
             data.edge_index = data_and_model.get_data().edge_index
             data.edge_attr = data_and_model.get_data().edge_attr
-            # here insert the data read
+
+            # Wait until the file is fully written
+            self.wait_until_file_is_fully_written(event.src_path)
+
+            # Load the file
             data.x = convert_w_to_tensor(data_and_model.get_iteration_number())
 
             predicted = self.data_and_model.get_model()(data.to(get_device()))
@@ -212,6 +216,15 @@ class Handler(FileSystemEventHandler):
             np.savetxt(input_dir + "/predicted_u2_" + str(data_and_model.get_iteration_number()) + ".txt", predicted_u2.detach().numpy())
             data_and_model.set_iteration_number(data_and_model.get_iteration_number() + 1)
 
+    #I need to wait until the file is completely written
+    def wait_until_file_is_fully_written(self, file_path):
+        last_size = -1
+        while True:
+            current_size = os.path.getsize(file_path)
+            if current_size == last_size:
+                break
+            last_size = current_size
+            t.sleep(0.001)
 
 #Input folder for data from FreeFEM
 input_folder  = "online_data"

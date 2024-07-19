@@ -122,7 +122,7 @@ def parallel_processing(data):
 
     tensordictionary = read_freeFEM_results(data)
     graph_list = []
-    create_graph_fromXYZ = RadiusGraph(r=5.0)
+    create_graph_fromXYZ = RadiusGraph(r=0.1, max_num_neighbors = 50)
     compute_edge_lengths = Distance(norm=False, cat=True)
 
     #Create the edge only once

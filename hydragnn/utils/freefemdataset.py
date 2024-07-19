@@ -1,4 +1,5 @@
 import os
+import random
 
 import torch
 from mpi4py import MPI
@@ -30,6 +31,7 @@ class GraphDataset(AbstractBaseDataset):
         #I receive different folders, each representing a different run of the FreeFem code
         for local_value in local_values:
             self.dataset.extend(parallel_processing(local_value))
+        random.shuffle(self.dataset)
         # Each file has a tensor for every iteration. So each file represent a complete run of the FreeFem code.
         MPI.COMM_WORLD.Barrier()
 
