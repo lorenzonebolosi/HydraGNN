@@ -270,7 +270,7 @@ if __name__ == "__main__":
     if not args.loadexistingsplit:
         total = GraphDataset(
             os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/")  # dirpwd + "/dataset/VASP_calculations/binaries", config, dist=True)
-        #__normalize_dataset(total)
+        __normalize_dataset(total)
         # Example usage with a list of data objects
         data_objects = total  # Replace with your actual data objects
         #plot_iterations(data_objects, 'plots')

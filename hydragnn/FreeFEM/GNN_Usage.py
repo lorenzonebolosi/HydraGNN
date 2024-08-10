@@ -217,14 +217,23 @@ class Handler(FileSystemEventHandler):
             data_and_model.set_iteration_number(data_and_model.get_iteration_number() + 1)
 
     #I need to wait until the file is completely written
-    def wait_until_file_is_fully_written(self, file_path):
-        last_size = -1
+    def wait_until_file_is_fully_written(self, file_path, target_row_count=4961):
         while True:
-            current_size = os.path.getsize(file_path)
-            if current_size == last_size:
+            with open(file_path, 'r') as file:
+                current_row_count = sum(1 for _ in file)  # Count the number of rows
+            if current_row_count >= target_row_count:
                 break
-            last_size = current_size
-            t.sleep(0.001)
+            t.sleep(0.001)  # Wait a moment before checking again
+
+    #This implementation works but sometimes python reads faster than what freefem writes
+    # def wait_until_file_is_fully_written(self, file_path):
+    #     last_size = -1
+    #     while True:
+    #         current_size = os.path.getsize(file_path)
+    #         if current_size == last_size:
+    #             break
+    #         last_size = current_size
+    #         t.sleep(0.001)
 
 #Input folder for data from FreeFEM
 input_folder  = "online_data"
