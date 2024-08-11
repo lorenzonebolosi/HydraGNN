@@ -337,7 +337,7 @@ if __name__ == "__main__":
 
         #Print after reading from pickle
         data_objects = [trainset[0]]  # Replace with your actual data objects
-        plot_iterations(data_objects, 'plots_after_pkl_read')
+        #plot_iterations(data_objects, 'plots_after_pkl_read')
         # minmax_node_feature = trainset.minmax_node_feature
         # minmax_graph_feature = trainset.minmax_graph_feature
         pna_deg = trainset.pna_deg
