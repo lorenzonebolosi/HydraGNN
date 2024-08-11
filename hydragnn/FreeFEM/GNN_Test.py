@@ -109,12 +109,12 @@ def info(*args, logtype="info", sep=" "):
 
 if __name__ == "__main__":
 
-    modelname = "PNA-r-5-ncl-6-hd-200-ne-15-lr-0.001-bs-3-data-tensors-node_ft-2-task_weights-1-1-"
+    modelname = "EGNN-r-5-ncl-6-hd-150-ne-20-lr-0.001-bs-15-data-tensors-node_ft-2-task_weights-1-1-"
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--inputfile", help="input file", type=str,
-        default="./logs/PNA-r-5-ncl-6-hd-200-ne-15-lr-0.001-bs-3-data-tensors-node_ft-2-task_weights-1-1-/config.json"
+        default="./logs/" + modelname + "/config.json"
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument(

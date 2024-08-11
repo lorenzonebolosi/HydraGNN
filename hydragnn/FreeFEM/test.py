@@ -1,6 +1,7 @@
 import os, json
 import logging
 import sys
+import random
 
 import numpy as np
 from mpi4py import MPI
@@ -168,15 +169,15 @@ def plot_iterations(data_objects, output_dir):
 
         # Creating a scatter plot for node features w
         plt.subplot(3, 1, 1)
-        plt.scatter(pos_x, pos_y, c=w, cmap='viridis', s=10, edgecolor='k')
+        plt.scatter(pos_x, pos_y, c=w, cmap='viridis', s=50, edgecolor='k')
         plt.colorbar(label='w')
         plt.xlabel('x-coordinate')
         plt.ylabel('y-coordinate')
-        plt.title(f'Iteration {i + 1}: Node features w, Compliance: ' + str(data.y.item()))
+        #plt.title(f'Iteration {i + 1}: Node features w, Compliance: ' + str(data.y.item()))
 
         # Creating a scatter plot for u1
         plt.subplot(3, 1, 2)
-        plt.scatter(pos_x, pos_y, c=u1, cmap='coolwarm', s=10, edgecolor='k')
+        plt.scatter(pos_x, pos_y, c=u1, cmap='coolwarm', s=50, edgecolor='k')
         plt.colorbar(label='u1')
         plt.xlabel('x-coordinate')
         plt.ylabel('y-coordinate')
@@ -184,7 +185,7 @@ def plot_iterations(data_objects, output_dir):
 
         # Creating a scatter plot for u2
         plt.subplot(3, 1, 3)
-        plt.scatter(pos_x, pos_y, c=u2, cmap='coolwarm', s=10, edgecolor='k')
+        plt.scatter(pos_x, pos_y, c=u2, cmap='coolwarm', s=50, edgecolor='k')
         plt.colorbar(label='u2')
         plt.xlabel('x-coordinate')
         plt.ylabel('y-coordinate')
@@ -270,10 +271,11 @@ if __name__ == "__main__":
     if not args.loadexistingsplit:
         total = GraphDataset(
             os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/")  # dirpwd + "/dataset/VASP_calculations/binaries", config, dist=True)
-        __normalize_dataset(total)
+        #__normalize_dataset(total)
+        total.dataset = [random.choice(total.dataset)] * 4000
         # Example usage with a list of data objects
-        data_objects = total  # Replace with your actual data objects
-        #plot_iterations(data_objects, 'plots')
+        data_objects = [total[0]]  # Replace with your actual data objects
+        plot_iterations(data_objects, 'plots')
         print(len(total))
         trainset, valset, testset = split_dataset(
             dataset=total,
@@ -333,7 +335,9 @@ if __name__ == "__main__":
         valset = SimplePickleDataset(basedir=basedir, label="valset", var_config=var_config)
         testset = SimplePickleDataset(basedir=basedir, label="testset", var_config=var_config)
 
-
+        #Print after reading from pickle
+        data_objects = [trainset[0]]  # Replace with your actual data objects
+        plot_iterations(data_objects, 'plots_after_pkl_read')
         # minmax_node_feature = trainset.minmax_node_feature
         # minmax_graph_feature = trainset.minmax_graph_feature
         pna_deg = trainset.pna_deg
