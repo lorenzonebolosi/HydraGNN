@@ -272,7 +272,16 @@ if __name__ == "__main__":
         total = GraphDataset(
             os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/")  # dirpwd + "/dataset/VASP_calculations/binaries", config, dist=True)
         __normalize_dataset(total)
-        total.dataset = [random.choice(total.dataset)] * 4000
+        #For debug purposes I want all the x to be fixed from 0 to 1 equal distributed
+
+        # Generate a column vector of 451 values from 0 to 1
+        column = torch.linspace(0, 1, steps=451)
+
+        # Stack the column vector three times to form a 451 x 3 matrix
+        x = column.unsqueeze(1).repeat(1, 3)
+        random_graph = random.choice(total.dataset)
+        random_graph.x = x
+        total.dataset = [random_graph] * 4000
         # Example usage with a list of data objects
         data_objects = [total[0]]  # Replace with your actual data objects
         plot_iterations(data_objects, 'plots')
