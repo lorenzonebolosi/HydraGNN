@@ -402,6 +402,7 @@ if __name__ == "__main__":
         log_name,
         verbosity,
         create_plots=True,
+        plot_hist_solution=True,
     )
 
     hydragnn.utils.save_model(model, optimizer, log_name)

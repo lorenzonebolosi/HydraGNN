@@ -38,11 +38,9 @@
       "output_heads": {
         "node": {
           "num_headlayers": [
-            5
+            3
           ],
           "dim_headlayers": [
-            25,
-            25,
             25,
             25,
             25
@@ -154,7 +152,7 @@
     "Training": {
       "perc_train": 0.8,
       "num_epoch": 15,
-      "batch_size": 3,
+      "batch_size": 5,
       "EarlyStopping": true,
       "patience": 5,
       "Checkpoint": true,
