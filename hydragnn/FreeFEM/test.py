@@ -271,7 +271,7 @@ if __name__ == "__main__":
     if not args.loadexistingsplit:
         total = GraphDataset(
             os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/")  # dirpwd + "/dataset/VASP_calculations/binaries", config, dist=True)
-        #__normalize_dataset(total)
+        __normalize_dataset(total)
         total.dataset = [random.choice(total.dataset)] * 4000
         # Example usage with a list of data objects
         data_objects = [total[0]]  # Replace with your actual data objects
@@ -297,8 +297,8 @@ if __name__ == "__main__":
                 trainset,
                 basedir,
                 "trainset",
-                # minmax_node_feature=total.minmax_node_feature,
-                # minmax_graph_feature=total.minmax_graph_feature,
+                minmax_node_feature=total.minmax_node_feature,
+                minmax_graph_feature=total.minmax_graph_feature,
                 use_subdir=True,
                 attrs=attrs,
             )
@@ -306,16 +306,16 @@ if __name__ == "__main__":
                 valset,
                 basedir,
                 "valset",
-                # minmax_node_feature=total.minmax_node_feature,
-                # minmax_graph_feature=total.minmax_graph_feature,
+                minmax_node_feature=total.minmax_node_feature,
+                minmax_graph_feature=total.minmax_graph_feature,
                 use_subdir=True,
             )
             SimplePickleWriter(
                 testset,
                 basedir,
                 "testset",
-                # minmax_node_feature=total.minmax_node_feature,
-                # minmax_graph_feature=total.minmax_graph_feature,
+                minmax_node_feature=total.minmax_node_feature,
+                minmax_graph_feature=total.minmax_graph_feature,
                 use_subdir=True,
             )
         sys.exit(0)
@@ -338,8 +338,8 @@ if __name__ == "__main__":
         #Print after reading from pickle
         data_objects = [trainset[0]]  # Replace with your actual data objects
         #plot_iterations(data_objects, 'plots_after_pkl_read')
-        # minmax_node_feature = trainset.minmax_node_feature
-        # minmax_graph_feature = trainset.minmax_graph_feature
+        minmax_node_feature = trainset.minmax_node_feature
+        minmax_graph_feature = trainset.minmax_graph_feature
         pna_deg = trainset.pna_deg
     else:
         raise ValueError("Unknown data format: %d" % args.format)

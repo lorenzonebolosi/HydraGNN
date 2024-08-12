@@ -109,7 +109,7 @@ def info(*args, logtype="info", sep=" "):
 
 if __name__ == "__main__":
 
-    modelname = "EGNN-r-5-ncl-6-hd-150-ne-20-lr-0.001-bs-15-data-tensors-node_ft-2-task_weights-1-1-"
+    modelname = "EGNN-r-0.1-ncl-6-hd-200-ne-15-lr-0.001-bs-3-data-tensors-node_ft-2-task_weights-1-1-"
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
