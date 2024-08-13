@@ -198,7 +198,23 @@ def plot_iterations(data_objects, output_dir):
         plt.close()
 
 
+def normalize_columns(x):
+    """
+    Normalize each column of the tensor so that the values in each column range from 0 to 1.
 
+    Parameters:
+    x (torch.Tensor): A tensor of shape (451, 3) to be normalized.
+
+    Returns:
+    torch.Tensor: The normalized tensor with values in each column ranging from 0 to 1.
+    """
+    x_min = x.min(dim=0, keepdim=True).values  # Minimum value of each column
+    x_max = x.max(dim=0, keepdim=True).values  # Maximum value of each column
+
+    # Normalize each column
+    x_normalized = (x - x_min) / (x_max - x_min)
+
+    return x_normalized
 
 if __name__ == "__main__":
     #exec(os.path.dirname(os.path.abspath(__file__))+ "/freefemdataset.py")
@@ -272,16 +288,14 @@ if __name__ == "__main__":
         total = GraphDataset(
             os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/")  # dirpwd + "/dataset/VASP_calculations/binaries", config, dist=True)
         __normalize_dataset(total)
-        #For debug purposes I want all the x to be fixed from 0 to 1 equal distributed
-
-        # Generate a column vector of 451 values from 0 to 1
-        column = torch.linspace(0, 1, steps=451)
-
-        # Stack the column vector three times to form a 451 x 3 matrix
-        x = column.unsqueeze(1).repeat(1, 3)
+        ##########
+        # This is for testing purposes, with a single graph
         random_graph = random.choice(total.dataset)
-        random_graph.x = x
+        random_graph.x = normalize_columns(random_graph.x)
         total.dataset = [random_graph] * 4000
+        ##########
+
+
         # Example usage with a list of data objects
         data_objects = [total[0]]  # Replace with your actual data objects
         plot_iterations(data_objects, 'plots')
