@@ -13,7 +13,7 @@ from sklearn.preprocessing import minmax_scale
 
 class GraphDataset(AbstractBaseDataset):
 
-    def __init__(self, results_path):
+    def __init__(self, results_path, radius, max_neighbours):
         super().__init__()
         self.world_size = torch.distributed.get_world_size()
         self.rank = torch.distributed.get_rank()
@@ -30,7 +30,7 @@ class GraphDataset(AbstractBaseDataset):
         print("Process "+str(self.rank)+" has data: "+str(len(local_values)))
         #I receive different folders, each representing a different run of the FreeFem code
         for local_value in local_values:
-            self.dataset.extend(parallel_processing(local_value))
+            self.dataset.extend(parallel_processing(local_value, radius, max_neighbours))
         random.shuffle(self.dataset)
         # Each file has a tensor for every iteration. So each file represent a complete run of the FreeFem code.
         MPI.COMM_WORLD.Barrier()

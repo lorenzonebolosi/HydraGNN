@@ -118,11 +118,11 @@ def read_freeFEM_results(value):
     print("Each tensor has size: " + str(tensordictionary[0].size()))
     return tensordictionary
 
-def parallel_processing(data):
+def parallel_processing(data, radius, max_neighbours):
 
     tensordictionary = read_freeFEM_results(data)
     graph_list = []
-    create_graph_fromXYZ = RadiusGraph(r=0.1, max_num_neighbors = 50)
+    create_graph_fromXYZ = RadiusGraph(r=radius, max_num_neighbors = max_neighbours)
     compute_edge_lengths = Distance(norm=False, cat=True)
 
     #Create the edge only once
