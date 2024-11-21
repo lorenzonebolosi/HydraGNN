@@ -187,7 +187,7 @@ if __name__ == "__main__":
     if not args.loadexistingsplit:
         radius = config["NeuralNetwork"]["Architecture"]["radius"]
         max_neighbours = config["NeuralNetwork"]["Architecture"]["max_neighbours"]
-        # Createthe dataset
+        # Create the dataset
         total = GraphDataset(
             os.path.dirname(os.path.abspath(__file__))+"/freeFEM_results/", radius, max_neighbours)  # dirpwd + "/dataset/VASP_calculations/binaries", config, dist=True)
         #Split in training, validation and test set
