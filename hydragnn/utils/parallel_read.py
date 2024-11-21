@@ -119,7 +119,6 @@ def read_freeFEM_results(value):
     return tensordictionary
 
 def parallel_processing(data, radius, max_neighbours):
-
     tensordictionary = read_freeFEM_results(data)
     graph_list = []
     create_graph_fromXYZ = RadiusGraph(r=radius, max_num_neighbors = max_neighbours)
@@ -142,6 +141,8 @@ def parallel_processing(data, radius, max_neighbours):
         data = Data()
         data.pos = tensor[:, :2]
         data.x = tensor[:, 2:]
+        # Since creating the edge index is expensive, I will only do it once for the first one
+        # because the mesh is the same for all the iterations
         data.edge_index = first_data.edge_index
         data.edge_attr = first_data.edge_attr
         graph_list.append(data)
